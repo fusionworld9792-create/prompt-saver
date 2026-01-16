@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Salil Prompt Saver</title>
+
+<style>
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+}
+
+/* ================= SPLASH SCREEN ================= */
+#splash {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    animation: fadeOut 1s ease forwards;
+    animation-delay: 3s;
+}
+
+.insta-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 30px;
+    background: radial-gradient(circle at 30% 30%,
+        #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: zoomIn 1.5s ease;
+}
+
+.camera {
+    width: 55px;
+    height: 55px;
+    border: 4px solid white;
+    border-radius: 15px;
+    position: relative;
+}
+
+.camera::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 4px solid white;
+    border-radius: 50%;
+    top: 12px;
+    left: 12px;
+}
+
+.camera::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    top: 6px;
+    right: 6px;
+}
+
+.username {
+    margin-top: 20px;
+    color: white;
+    font-size: 20px;
+    letter-spacing: 1px;
+    animation: slideUp 1.5s ease;
+}
+
+/* ================= MAIN APP ================= */
+#app {
+    display: none;
+    padding: 20px;
+}
+
+.container {
+    max-width: 650px;
+    background: white;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background: #d62976;
+    color: white;
+    border-radius: 5px;
+}
+
+.prompt {
+    background: #f1f1f1;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+    position: relative;
+}
+
+.delete {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes zoomIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+    <div class="insta-logo">
+        <div class="camera"></div>
+    </div>
+    <div class="username">Salil_yadav47</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+    <div class="container">
+        <h2>📝 Prompt Saving Website</h2>
+
+        <textarea id="promptInput" placeholder="Write your prompt here..."></textarea>
+        <button onclick="savePrompt()">Save Prompt</button>
+
+        <h3>Saved Prompts</h3>
+        <div id="promptList"></div>
+    </div>
+</div>
+
+<script>
+/* ================= SPLASH CONTROL ================= */
+setTimeout(() => {
+    document.getElementById("splash").style.display = "none";
+    document.getElementById("app").style.display = "block";
+}, 3500);
+
+/* ================= PROMPT SAVER ================= */
+let prompts = JSON.parse(localStorage.getItem("prompts")) || [];
+
+function savePrompt() {
+    const input = document.getElementById("promptInput");
+    if (input.value.trim() === "") {
+        alert("Please write a prompt");
+        return;
+    }
+    prompts.push(input.value);
+    localStorage.setItem("prompts", JSON.stringify(prompts));
+    input.value = "";
+    showPrompts();
+}
+
+function deletePrompt(index) {
+    prompts.splice(index, 1);
+    localStorage.setItem("prompts", JSON.stringify(prompts));
+    showPrompts();
+}
+
+function showPrompts() {
+    const list = document.getElementById("promptList");
+    list.innerHTML = "";
+    prompts.forEach((prompt, index) => {
+        list.innerHTML += `
+            <div class="prompt">
+                ${prompt}
+                <span class="delete" onclick="deletePrompt(${index})">❌</span>
+            </div>
+        `;
+    });
+}
+
+showPrompts();
+</script>
+
+</body>
+</html>
